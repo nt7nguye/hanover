@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './SearchInterface.css';
+import { useNavigate } from 'react-router-dom';
 
 const SearchInterface = () => {
     const [query, setQuery] = useState('');
@@ -15,8 +16,9 @@ const SearchInterface = () => {
         'china approves tibet mega dam',
     ];
 
+    const navigate = useNavigate();
     const handleSubmit = () => {
-        console.log(query);
+        navigate(`/search/${query}`);
     };
 
     return (
