@@ -1,5 +1,7 @@
 import { useParams } from 'react-router-dom';
 import styles from './SearchResults.module.css';
+import { useState, useEffect } from 'react';
+import { getJson } from 'serpapi';
 
 interface SearchResult {
     title: string;
@@ -9,23 +11,27 @@ interface SearchResult {
 
 export default function SearchResults() {
     const { query } = useParams();
+    const [results, setResults] = useState<SearchResult[]>([]);
 
-    // Mock data - replace with actual API call later
-    const results: SearchResult[] = [
-        {
-            title: 'Howdy',
-            url: 'howdy.tamu.edu',
-            description:
-                'Howdy is a comprehensive web portal connecting students, applicants, faculty, staff, parents and former students to their web-based services at Texas A&M',
-        },
-        {
-            title: 'Connecting you to Texas A&M',
-            url: 'tamu.edu/connect',
-            description:
-                'Central hub for all Texas A&M connections and services',
-        },
-        // Add more mock results as needed
-    ];
+    useEffect(() => {
+        if (!query) return;
+        const fetchResults = async () => {
+            const response = await fetch(
+                `https://serpapi.com/api/v1/search?engine=google&q=${query}&api_key=${
+                    import.meta.env.VITE_SERP_API_KEY
+                }`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+            const data = await response.json();
+            setResults(data.organic);
+        };
+
+        fetchResults();
+    }, [query]);
 
     return (
         <div className={styles.container}>
