@@ -15,6 +15,10 @@ const SearchInterface = () => {
         'china approves tibet mega dam',
     ];
 
+    const handleSubmit = () => {
+        console.log(query);
+    };
+
     return (
         <div className="container">
             <p className="main-title">What do you want to know?</p>
@@ -25,8 +29,12 @@ const SearchInterface = () => {
                     placeholder="Ask anything..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' && query !== '') {
+                            handleSubmit();
+                        }
+                    }}
                 />
-
                 <div className="controls">
                     <button className="focus-btn">
                         <span className="icon">≡</span>Focus
@@ -43,18 +51,24 @@ const SearchInterface = () => {
                             </label>
                             <span>Pro</span>
                         </div>
-                        <button className="submit-btn">→</button>
+                        <button
+                            className={`submit-btn ${query ? 'active' : ''}`}
+                            onClick={handleSubmit}
+                        >
+                            →
+                        </button>
                     </div>
                 </div>
-
-                <div className="suggestions">
-                    {suggestions.map((suggestion, index) => (
-                        <div key={index} className="suggestion-item">
-                            <span>{suggestion}</span>
-                            <span className="arrow">↗</span>
-                        </div>
-                    ))}
-                </div>
+                {query !== '' && (
+                    <div className="suggestions">
+                        {suggestions.map((suggestion, index) => (
+                            <div key={index} className="suggestion-item">
+                                <span>{suggestion}</span>
+                                <span className="arrow">↗</span>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
