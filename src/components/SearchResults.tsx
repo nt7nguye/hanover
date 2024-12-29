@@ -4,9 +4,13 @@ import { useState, useEffect } from 'react';
 import { getJson } from 'serpapi';
 
 interface SearchResult {
+    position: number;
     title: string;
-    url: string;
-    description: string;
+    link: string;
+    displayed_link: string;
+    snippet: string;
+    favicon?: string;
+    thumbnail?: string;
 }
 
 export default function SearchResults() {
@@ -17,9 +21,7 @@ export default function SearchResults() {
         if (!query) return;
         const fetchResults = async () => {
             const response = await fetch(
-                `https://serpapi.com/api/v1/search?engine=google&q=${query}&api_key=${
-                    import.meta.env.VITE_SERP_API_KEY
-                }`,
+                `http://localhost:3000/api/search?q=${query}`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -27,7 +29,7 @@ export default function SearchResults() {
                 }
             );
             const data = await response.json();
-            setResults(data.organic);
+            setResults(data);
         };
 
         fetchResults();
@@ -42,17 +44,38 @@ export default function SearchResults() {
 
             <div className={styles.resultsSection}>
                 <h2>Sources</h2>
-                {results.map((result, index) => (
-                    <div key={index} className={styles.resultCard}>
-                        <h3>
-                            <a href={result.url} className={styles.resultTitle}>
-                                {result.title}
-                            </a>
-                        </h3>
-                        <span className={styles.resultUrl}>{result.url}</span>
+                {results.map((result) => (
+                    <div key={result.position} className={styles.resultCard}>
+                        <div className={styles.resultHeader}>
+                            {result.favicon && (
+                                <img
+                                    src={result.favicon}
+                                    alt=""
+                                    className={styles.favicon}
+                                />
+                            )}
+                            <h3>
+                                <a
+                                    href={result.link}
+                                    className={styles.resultTitle}
+                                >
+                                    {result.title}
+                                </a>
+                            </h3>
+                        </div>
+                        <span className={styles.resultUrl}>
+                            {result.displayed_link}
+                        </span>
                         <p className={styles.resultDescription}>
-                            {result.description}
+                            {result.snippet}
                         </p>
+                        {result.thumbnail && (
+                            <img
+                                src={result.thumbnail}
+                                alt=""
+                                className={styles.thumbnail}
+                            />
+                        )}
                     </div>
                 ))}
             </div>
